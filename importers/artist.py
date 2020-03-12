@@ -8,7 +8,7 @@ from datetime import datetime, date
 from SPARQLWrapper import SPARQLWrapper, JSON
 from trompace.connection import submit_query
 from trompace.mutations.person import mutation_update_artist, mutation_create_artist
-from trompace_local import lookupIdentifier
+from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
 
 from models import CE_Person
 
