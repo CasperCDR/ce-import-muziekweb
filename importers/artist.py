@@ -129,11 +129,11 @@ async def get_mw_artist(key: str) -> CE_Person:
             identifier = None,
             name = result[0]["name"]["value"],
             url = result[0]["url"]["value"],
-            contributor = "muziekweb.nl",
-            creator = "Muziekweb importer tool (TODO: git repo url)",
+            contributor = GLOBAL_CONTRIBUTOR,
+            creator = GLOBAL_IMPORTER_REPO,
         )
 
-        person.publisher = "https://www.muziekweb.nl" # CE Publisher id????
+        person.publisher = GLOBAL_PUBLISHER
         person.description = None
         person.birthDate = result[0]["birthYear"]["value"]
         person.deathDate = result[0]["deathYear"]["value"]
