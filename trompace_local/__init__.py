@@ -4,6 +4,12 @@ Local functions to select data from the Trompa CE.
 import trompace as ce
 from trompace.connection import submit_query
 
+"""
+Constants for registry in Trompa
+"""
+GLOBAL_CONTRIBUTOR = "muziekweb.nl"
+GLOBAL_PUBLISHER = "https://www.muziekweb.nl" # CE Publisher id????
+GLOBAL_IMPORTER_REPO = "https://github.com/CasperCDR/ce-import-muziekweb"
 
 async def queryFor(dataType, field, value):
     """
