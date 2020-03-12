@@ -43,7 +43,7 @@ trompa_ce_host = trompa_ce_host if args.ce_host is None else args.ce_host
 def readKeys(input: str) -> [str]:
     if os.path.isfile(input):
         with open(input, "r") as f:
-            keys = f.readlines()
+            keys = f.read().splitlines()
         return keys
     else:
         return [input]

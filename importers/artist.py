@@ -22,7 +22,7 @@ async def import_artist(keys: list):
         artist = await get_mw_artist(key)
 
         if artist is None:
-            print("")
+            print(f"No data received for {key}")
             continue
 
         artist.identifier = await lookupIdentifier("Person", artist.source)
