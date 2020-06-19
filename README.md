@@ -26,6 +26,10 @@ the Muziekweb identifier 'M00000238467':
 
     python import-mw.py -a M00000238467
 
+To import album information use:
+
+    python import-mw.py -r JK90000
+
 When importing audio fragments from an album release, the importer acquires
 data from the Muziekweb API
 (https://www.muziekweb.nl/Muziekweb/Webservice/WebserviceAPI.php). To make use
