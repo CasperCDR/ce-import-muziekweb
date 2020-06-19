@@ -5,12 +5,15 @@ import json
 import trompace as ce
 
 from datetime import datetime, date
-#from trompace.connection import submit_query
-#from trompace.mutations.mediaobject import mutation_update_media_object, mutation_create_media_object
-#from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
+from trompace.connection import submit_query
+from trompace.mutations.mediaobject import mutation_update_media_object, mutation_create_media_object
+from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
 
 from models import CE_AudioObject
 from muziekweb_api import get_album_information
+
+MW_AUDIO_URL = ""
+
 
 async def import_tracks(key: str):
     """
@@ -71,27 +74,28 @@ def get_mw_audio(key: str) -> [CE_AudioObject]:
     # Use the Muziekweb API to retrieve all the tracks on the album
     doc = get_album_information(key)
 
-    if doc != None and doc.firstNode.tagName == "Result" and doc.firstNode.attributes['ErrorCode'].value == "0":
+    if doc is not None and doc.firstChild.tagName == "Result" and doc.firstChild.attributes['ErrorCode'].value == "0":
 
         # Now extract the audio links from the Muziekweb data
         audio_objects = list()
 
         for track in doc.getElementsByTagName('Track'):
-            print(track)
-            '''
+
+            trackId = track.getElementsByTagName('AlbumTrackID')[0].firstChild.data
+
             audio_object = CE_AudioObject(
                 identifier = None,
-                name = track.get('TrackTitle'),
-                url = result[0]["url"]["value"],
+                name = trackId,
+                url = MW_AUDIO_URL.format(trackId),
                 contributor = GLOBAL_CONTRIBUTOR,
                 creator = GLOBAL_IMPORTER_REPO,
             )
 
+            audio_object.title = track.getElementsByTagName('TrackTitle')[0].firstChild.data,
             audio_object.publisher = GLOBAL_PUBLISHER
-            audio_object.description = None
+            audio_object.description = 'Embed in frame using the following code: <iframe width="300" height="30" src="[url]" frameborder="no" scrolling="no" allowtransparency="true"></iframe>'
 
             audio_objects.append(audio_object)
-            '''
 
         return audio_objects
 

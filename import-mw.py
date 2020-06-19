@@ -9,11 +9,11 @@ Licensed under GPLv3.
 import os
 import argparse
 import asyncio
-#import trompace as ce
+import trompace as ce
 
-#from trompace import config
+from trompace import config
 from muziekweb_api import set_api_account
-from importers import import_album#import_artist, import_album
+from importers import import_artist, import_album
 from dotenv import load_dotenv
 
 # Environment settings (defaults)
@@ -64,18 +64,24 @@ def readKeys(input: str) -> [str]:
 
 if __name__ == "__main__":
     # Set the hostname where data data is imported
-    #_proto, _server = trompa_ce_host.split("://")
-    #ce.config.config._set_server(trompa_ce_host, (_proto == "https"))
+
+    # NOTE: Currently requires the fix/remove-ce-host-setting-from-file branch
+    # of the Trompa CE client
+    _proto, _server = trompa_ce_host.split("://")
+    ce.config.set_server(_server, (_proto == "https"))
+
+
+    # Trompa Example (not working yet)
     #config_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'import.ini')
-
-    # Set the Muziekweb API account
-    if mw_api_user is not None and mw_api_pass is not None:
-        set_api_account(mw_api_user, mw_api_pass)
-
     #if path.exists(config_file):
     #    ce.config.read_config(config_file)
     #else:
     #    ce.config.set_server('http://localhost:4000', False)
+
+
+    # Set the Muziekweb API account
+    if mw_api_user is not None and mw_api_pass is not None:
+        set_api_account(mw_api_user, mw_api_pass)
 
     # Import Muziekweb artists into the Trompa CE
     #asyncio.run(import_artist(readKeys(source_artist)))
