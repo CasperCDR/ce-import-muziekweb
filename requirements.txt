@@ -5,5 +5,5 @@ rdflib>=4.2.2
 rdflib-jsonld>=0.4.0
 requests>=2.22.0
 SPARQLWrapper>=1.8.5
-trompa-ce-client>=0.0.1
+trompa-ce-client>=0.2
 websockets>=8.1

@@ -17,7 +17,7 @@ async def import_artist(keys: list):
     Imports artists from Muziekweb for all given keys into the Trompa CE.
     """
     for key in keys:
-        print(f"Retrieving artist with key {key} form Muziekweb")
+        print(f"Retrieving artist with key {key} from Muziekweb")
         # Get data from Muziekweb
         artist = await get_mw_artist(key)
 
