@@ -1,15 +1,15 @@
-"""Trompa Person model
+"""Trompa MusicAlbum model
 """
 
 from dataclasses import dataclass
-from . import CE_BaseModel, Person
+from . import CE_BaseModel, MusicAlbum
 
 @dataclass
-class CE_Person(Person, CE_BaseModel):
+class CE_MusicAlbum(MusicAlbum, CE_BaseModel):
     """
-    Trompa Person model
+    Trompa MusicAlbum model
 
-    Inherits from schema.org Person
+    Inherits from schema.org MusicAlbum
     """
 
     def __init__(self, identifier: str, name: str, url: str, contributor: str, creator: str):

@@ -8,7 +8,7 @@ from datetime import datetime, date
 from SPARQLWrapper import SPARQLWrapper, JSON
 from trompace.connection import submit_query
 from trompace.mutations.person import mutation_update_artist, mutation_create_artist
-from trompace_local import lookupIdentifier
+from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
 
 from models import CE_Person
 
@@ -17,7 +17,7 @@ async def import_artist(keys: list):
     Imports artists from Muziekweb for all given keys into the Trompa CE.
     """
     for key in keys:
-        print(f"Retrieving artist with key {key} form Muziekweb")
+        print(f"Retrieving artist with key {key} from Muziekweb")
         # Get data from Muziekweb
         artist = await get_mw_artist(key)
 
@@ -129,11 +129,11 @@ async def get_mw_artist(key: str) -> CE_Person:
             identifier = None,
             name = result[0]["name"]["value"],
             url = result[0]["url"]["value"],
-            contributor = "muziekweb.nl",
-            creator = "Muziekweb importer tool (TODO: git repo url)",
+            contributor = GLOBAL_CONTRIBUTOR,
+            creator = GLOBAL_IMPORTER_REPO,
         )
 
-        person.publisher = "https://www.muziekweb.nl" # CE Publisher id????
+        person.publisher = GLOBAL_PUBLISHER
         person.description = None
         person.birthDate = result[0]["birthYear"]["value"]
         person.deathDate = result[0]["deathYear"]["value"]
