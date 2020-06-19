@@ -100,6 +100,8 @@ class CE_BaseModel():
         self.date = date.today()
 
     identifier: str = None
+    name: str = None
+    url: str = None
     source: str = None
     contributor: str = None
     creator: str = None

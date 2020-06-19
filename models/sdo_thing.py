@@ -67,9 +67,9 @@ class Thing:
         A CreativeWork or Event about this Thing. Inverse property: about.
     """
 
-    identifier: str
-    name: str
-    url: str
+    identifier: str = None
+    name: str = None
+    url: str = None
     description: str = None
     additionalType: str = None
     alternateName: str = None

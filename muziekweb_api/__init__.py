@@ -21,7 +21,7 @@ def set_api_account(user, password):
 def get_album_information(key: str):
     # Use the Muziekweb API to retrieve all the tracks on the album
     response  = urllib.request.urlopen(f"{MW_API_HOST}/v2/search/albumInformation.xml?albumID={key}")
-    body = await response.read()
+    body = response.read()
 
     if len(body) > 0:
         # Return the xml as object

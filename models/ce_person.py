@@ -11,4 +11,6 @@ class CE_Person(Person, CE_BaseModel):
 
     Inherits from schema.org Person
     """
-    pass
+
+    def __init__(self, identifier: str, name: str, url: str, contributor: str, creator: str):
+        CE_BaseModel.__init__(self, identifier, name, url, contributor, creator)

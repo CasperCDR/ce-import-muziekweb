@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from . import CE_BaseModel, AudioObject
 
 @dataclass
-class CE_AudioObject(AudioObject, CE_BaseModel):
+class CE_AudioObject(CE_BaseModel, AudioObject):
     """
     Trompa AudioObject model
 
@@ -13,5 +13,5 @@ class CE_AudioObject(AudioObject, CE_BaseModel):
     """
 
     def __init__(self, identifier: str, name: str, url: str, contributor: str, creator: str):
-        super().__init__(identifier, name, url, contributor, creator)
+        CE_BaseModel.__init__(self, identifier, name, url, contributor, creator)
         self.format = "audio/aac"

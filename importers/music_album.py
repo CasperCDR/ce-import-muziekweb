@@ -6,11 +6,11 @@ import trompace as ce
 
 from datetime import datetime, date
 from SPARQLWrapper import SPARQLWrapper, JSON
-from trompace.connection import submit_query
-from trompace.mutations.music_album import mutation_update_music_album, mutation_create_music_album
-from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
+#from trompace.connection import submit_query
+#from trompace.mutations.music_album import mutation_update_music_album, mutation_create_music_album
+#from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
 from models import CE_MusicAlbum
-from . import import_tracks
+from .audio_object import import_tracks
 
 async def import_album(keys: list):
     """
@@ -75,7 +75,7 @@ async def import_album(keys: list):
         '''
 
         # Now import the audio fragments
-        import_tracks(key)
+        await import_tracks(key)
 
     print("Importing albums done.")
 
