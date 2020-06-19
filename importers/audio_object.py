@@ -31,7 +31,7 @@ async def import_tracks(key: str):
     for track in tracks:
 
         track.identifier = await lookupIdentifier("AudioObject", track.source)
-        '''
+
         if track.identifier is not None:
             print(f"Updating record {track.identifier} in Trompa CE", end="")
             response = await ce.connection.submit_query(mutation_update_media_object(
@@ -66,7 +66,7 @@ async def import_tracks(key: str):
                 language=track.language
             ))
             track.identifier = response["data"]["CreatePerson"]["identifier"]
-        '''
+
     print(f"Importing tracks for {key} done.")
 
 
