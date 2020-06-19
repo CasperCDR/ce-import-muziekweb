@@ -26,6 +26,14 @@ the Muziekweb identifier 'M00000238467':
 
     python import-mw.py -a M00000238467
 
+When importing audio fragments from an album release, the importer acquires
+data from the Muziekweb API
+(https://www.muziekweb.nl/Muziekweb/Webservice/WebserviceAPI.php). To make use
+of this API an account is required. You can register a free account on the API
+and fill the account details in de .env file. An example is given in the
+.env.example file. You can also run the importer using the run parameters -mwu
+and -mwp.
+
 ## License
 
 ```
