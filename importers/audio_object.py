@@ -12,7 +12,7 @@ from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBL
 from models import CE_AudioObject
 from muziekweb_api import get_album_information
 
-MW_AUDIO_URL = ""
+MW_AUDIO_URL = "https://www.muziekweb.nl/Embed/{}"
 
 
 async def import_tracks(key: str):
