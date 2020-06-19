@@ -4,8 +4,7 @@ For reference see schema.org: https://schema.org/AudioObject
 """
 
 from dataclasses import dataclass
-from datetime import date
-from . import Thing, CreativeWork, MediaObject
+from . import MediaObject
 
 @dataclass
 class AudioObject(MediaObject):

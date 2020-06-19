@@ -5,6 +5,7 @@ _testdata
 
 .DS_Store
 .vscode
+.env
 
 *.egg
 *.egg-info/

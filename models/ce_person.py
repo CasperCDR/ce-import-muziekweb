@@ -2,9 +2,7 @@
 """
 
 from dataclasses import dataclass
-from datetime import date
-from . import CE_BaseModel
-from . import Person
+from . import CE_BaseModel, Person
 
 @dataclass
 class CE_Person(Person, CE_BaseModel):

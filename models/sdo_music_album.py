@@ -4,7 +4,6 @@ For reference see schema.org: https://schema.org/MusicAlbum
 """
 
 from dataclasses import dataclass
-from datetime import date
 from . import MusicPlaylist
 
 @dataclass

@@ -13,7 +13,6 @@ https://docs.google.com/document/d/1MBocgsTFcJufvjZXA6PY8bUitkxEIaSKD1lJZf9PToM/
 
 from dataclasses import dataclass
 from datetime import date
-from . import Person
 
 @dataclass
 class CE_BaseModel():

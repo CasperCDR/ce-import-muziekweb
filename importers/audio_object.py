@@ -5,143 +5,94 @@ import json
 import trompace as ce
 
 from datetime import datetime, date
-from SPARQLWrapper import SPARQLWrapper, JSON
 from trompace.connection import submit_query
-from trompace.mutations.person import mutation_update_artist, mutation_create_artist
+from trompace.mutations.mediaobject import mutation_update_media_object, mutation_create_media_object
 from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
 
 from models import CE_AudioObject
+from muziekweb_api import get_album_information
 
-async def import_tracks(keys: list):
+async def import_tracks(key: str):
     """
-    Imports audio fragments from Muziekweb for all given keys into the Trompa CE.
+    Imports audio fragments from Muziekweb for the key into the Trompa CE.
     """
-    for key in keys:
-        print(f"Retrieving release info with key {key} from Muziekweb")
-        # Get data from Muziekweb
-        tracks = await get_mw_audio(key)
+    print(f"Retrieving release info with key {key} from Muziekweb")
+    # Get data from Muziekweb
+    tracks = await get_mw_audio(key)
 
-        if tracks is None:
-            print(f"No data received for {key}")
-            continue
+    if tracks is None:
+        print(f"No track data received for {key}")
+        return
 
-        # Loop the tracks on the release to add all references to the 30 seconds music fragment
-        for track in tracks:
+    # Loop the tracks on the release to add all references to the 30 seconds music fragment
+    for track in tracks:
 
-            track.identifier = await lookupIdentifier("AudioObject", track.source)
+        track.identifier = await lookupIdentifier("AudioObject", track.source)
 
-            if track.identifier is not None:
-                print(f"Updating record {track.identifier} in Trompa CE", end="")
-                response = await ce.connection.submit_query(mutation_update_artist(
-                    identifier=track.identifier,
-                    artist_name=track.name,
-                    publisher=track.publisher,
-                    contributor=track.contributor,
-                    creator=track.creator,
-                    source=track.source,
-                    description=track.description,
-                    language=track.language,
-                    coverage=None,
-                    #formatin="text/html",
-                    date=date.today(),
-                    disambiguatingDescription=track.disambiguatingDescription,
-                    relation=track.relatedTo,
-                    _type=None,
-                    _searchScore=None,
-                    additionalType=track.additionalType,
-                    alternateName=track.alternateName,
-                    image=track.image,
-                    sameAs=track.sameAs,
-                    url=track.url,
-                    additionalName=track.additionalName,
-                    award=track.award,
-                    birthDate=track.birthDate,
-                    deathDate=track.deathDate,
-                    familyName=track.familyName,
-                    gender=track.gender,
-                    givenName=track.givenName,
-                    honorificPrefix=track.honorificPrefix,
-                    honorificSuffix=track.honorificSuffix,
-                    jobTitle=track.jobTitle,
-                    knowsLanguage=track.knowsLanguage
-                ))
-                track.identifier = response["data"]["UpdatePerson"]["identifier"]
-            else:
-                print("Inserting new record in Trompa CE", end="")
-                response = await ce.connection.submit_query(mutation_create_artist(
-                    artist_name=track.name,
-                    publisher=track.publisher,
-                    contributor=track.contributor,
-                    creator=track.creator,
-                    source=track.source,
-                    description=track.description,
-                    language=track.language,
-                    coverage=None,
-                    #formatin="text/html",
-                    date=date.today(),
-                    disambiguatingDescription=track.disambiguatingDescription,
-                    relation=track.relatedTo,
-                    _type=None,
-                    _searchScore=None,
-                    additionalType=track.additionalType,
-                    alternateName=track.alternateName,
-                    image=track.image,
-                    sameAs=track.sameAs,
-                    url=track.url,
-                    additionalName=track.additionalName,
-                    award=track.award,
-                    birthDate=track.birthDate,
-                    deathDate=track.deathDate,
-                    familyName=track.familyName,
-                    gender=track.gender,
-                    givenName=track.givenName,
-                    honorificPrefix=track.honorificPrefix,
-                    honorificSuffix=track.honorificSuffix,
-                    jobTitle=track.jobTitle,
-                    knowsLanguage=track.knowsLanguage
-                ))
-                track.identifier = response["data"]["CreatePerson"]["identifier"]
+        if track.identifier is not None:
+            print(f"Updating record {track.identifier} in Trompa CE", end="")
+            response = await ce.connection.submit_query(mutation_update_media_object(
+                identifier=track.identifier,
+                title=track.name,
+                description=track.description,
+                date=date.today(),
+                creator=track.creator,
+                contributor=track.contributor,
+                format_=track.format,
+                encodingFormat=track.format,
+                source=track.source,
+                subject=track.name,
+                contentUrl=track.contentUrl,
+                language=track.language
+            ))
+            track.identifier = response["data"]["UpdatePerson"]["identifier"]
+        else:
+            print("Inserting new record in Trompa CE", end="")
+            response = await ce.connection.submit_query(mutation_create_media_object(
+                name=track.name,
+                title=track.name,
+                description=track.description,
+                date=date.today(),
+                creator=track.creator,
+                contributor=track.contributor,
+                format_=track.format,
+                encodingFormat=track.format,
+                source=track.source,
+                subject=track.name,
+                contentUrl=track.contentUrl,
+                language=track.language
+            ))
+            track.identifier = response["data"]["CreatePerson"]["identifier"]
 
-            if track.identifier is None:
-                print(" - failed.")
-            else:
-                print(" - success.")
-
-    print("Importing artists done.")
+    print(f"Importing tracks for {key} done.")
 
 
 async def get_mw_audio(key: str) -> [CE_AudioObject]:
-    sparql = SPARQLWrapper("https://api.data.muziekweb.nl/datasets/muziekweborganization/Muziekweb/services/Muziekweb/sparql")
-    sparql.setReturnFormat(JSON)
-    qry = f"""PREFIX schema: <http://schema.org/>
-    PREFIX vocab: <https://data.muziekweb.nl/vocab/>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    select ?url ?name ?birthYear ?deathYear where {{
-        BIND(<https://data.muziekweb.nl/Link/{key}> as ?url)
-        ?url vocab:beginYear ?birthYear;
-            vocab:endYear ?deathYear;
-            rdfs:label ?name.
-    }}"""
-    sparql.setQuery(qry)
+    # Use the Muziekweb API to retrieve all the tracks on the album
+    doc = get_album_information(key)
 
-    result = sparql.query().convert()["results"]["bindings"]
+    if doc != None and doc.firstNode.tagName == "Result" and doc.firstNode.attributes['ErrorCode'].value == "0":
 
-    if len(result) > 0:
         # Now extract the audio links from the Muziekweb data
+        audio_objects = list()
 
-        person = CE_AudioObject(
-            identifier = None,
-            name = result[0]["name"]["value"],
-            url = result[0]["url"]["value"],
-            contributor = GLOBAL_CONTRIBUTOR,
-            creator = GLOBAL_IMPORTER_REPO,
-        )
+        for track in doc.getElementsByTagName('Track'):
+            print(track)
+            '''
+            audio_object = CE_AudioObject(
+                identifier = None,
+                name = track.get('TrackTitle'),
+                url = result[0]["url"]["value"],
+                contributor = GLOBAL_CONTRIBUTOR,
+                creator = GLOBAL_IMPORTER_REPO,
+            )
 
-        person.publisher = GLOBAL_PUBLISHER
-        person.description = None
-        person.birthDate = result[0]["birthYear"]["value"]
-        person.deathDate = result[0]["deathYear"]["value"]
+            audio_object.publisher = GLOBAL_PUBLISHER
+            audio_object.description = None
 
-        return person
+            audio_objects.append(audio_object)
+            '''
+
+        return audio_objects
 
     return None

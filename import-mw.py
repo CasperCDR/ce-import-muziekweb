@@ -10,13 +10,17 @@ import os
 import argparse
 import asyncio
 import trompace as ce
+import muziekweb_api
 
 from trompace import config
 from importers import import_artist, import_album
+from dotenv import load_dotenv
 
 # Environment settings (defaults)
+load_dotenv()
 trompa_ce_host = os.environ["CE_HOST"] if "CE_HOST" in os.environ else "http://localhost:4000"
-
+mw_api_user = os.environ["MW_API_USER"] if "MW_API_USER" in os.environ else None
+mw_api_pass = os.environ["MW_API_PASS"] if "MW_API_PASS" in os.environ else None
 
 # Construct the argument parser and parse the arguments
 main_parser = argparse.ArgumentParser(description="Input data options:")
@@ -44,8 +48,8 @@ source_track = None if args.track is None else args.track.strip(" \n\t\"")
 trompa_ce_host = trompa_ce_host if args.ce_host is None else args.ce_host
 
 # Muziekweb API
-mw_api_user = None if args.mw_api_user is None else args.mw_api_user
-mw_api_pass = None if args.mw_api_pass is None else args.mw_api_pass
+mw_api_user = mw_api_user if args.mw_api_user is None else args.mw_api_user
+mw_api_pass = mw_api_pass if args.mw_api_pass is None else args.mw_api_pass
 
 
 def readKeys(input: str) -> [str]:
@@ -60,7 +64,17 @@ def readKeys(input: str) -> [str]:
 if __name__ == "__main__":
     # Set the hostname where data data is imported
     _proto, _server = trompa_ce_host.split("://")
-    ce.config.set_server(_server, (_proto == "https"))
+    ce.config.config._set_server(trompa_ce_host, (_proto == "https"))
+    config_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'import.ini')
+
+    # Set the Muziekweb API account
+    if mw_api_user is not None and mw_api_pass is not None:
+        muziekweb_api.set_api_account(mw_api_user, mw_api_pass)
+
+    #if path.exists(config_file):
+    #    ce.config.read_config(config_file)
+    #else:
+    #    ce.config.set_server('http://localhost:4000', False)
 
     # Import Muziekweb artists into the Trompa CE
     asyncio.run(import_artist(readKeys(source_artist)))

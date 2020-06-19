@@ -7,16 +7,17 @@ import trompace as ce
 from datetime import datetime, date
 from SPARQLWrapper import SPARQLWrapper, JSON
 from trompace.connection import submit_query
-from trompace.mutations.person import mutation_update_artist, mutation_create_artist
+from trompace.mutations.music_album import mutation_update_music_album, mutation_create_music_album
 from trompace_local import GLOBAL_CONTRIBUTOR, GLOBAL_IMPORTER_REPO, GLOBAL_PUBLISHER, lookupIdentifier
-
 from models import CE_MusicAlbum
+from . import import_tracks
 
 async def import_album(keys: list):
     """
     Imports albums from Muziekweb for all given keys into the Trompa CE.
     """
     for key in keys:
+        ''' Not yet available in Trompa ce-client
         print(f"Retrieving album with key {key} from Muziekweb")
         # Get data from Muziekweb
         album = await get_mw_album(key)
@@ -29,9 +30,9 @@ async def import_album(keys: list):
 
         if album.identifier is not None:
             print(f"Updating record {album.identifier} in Trompa CE", end="")
-            response = await ce.connection.submit_query(mutation_update_artist(
+            response = await ce.connection.submit_query(mutation_update_music_album(
                 identifier=album.identifier,
-                artist_name=album.name,
+                name=album.name,
                 publisher=album.publisher,
                 contributor=album.contributor,
                 creator=album.creator,
@@ -44,28 +45,12 @@ async def import_album(keys: list):
                 disambiguatingDescription=album.disambiguatingDescription,
                 relation=album.relatedTo,
                 _type=None,
-                _searchScore=None,
-                additionalType=album.additionalType,
-                alternateName=album.alternateName,
-                image=album.image,
-                sameAs=album.sameAs,
-                url=album.url,
-                additionalName=album.additionalName,
-                award=album.award,
-                birthDate=album.birthDate,
-                deathDate=album.deathDate,
-                familyName=album.familyName,
-                gender=album.gender,
-                givenName=album.givenName,
-                honorificPrefix=album.honorificPrefix,
-                honorificSuffix=album.honorificSuffix,
-                jobTitle=album.jobTitle,
-                knowsLanguage=album.knowsLanguage
+                _searchScore=None
             ))
-            album.identifier = response["data"]["UpdatePerson"]["identifier"]
+            album.identifier = response["data"]["UpdateMusicAlbum"]["identifier"]
         else:
             print("Inserting new record in Trompa CE", end="")
-            response = await ce.connection.submit_query(mutation_create_artist(
+            response = await ce.connection.submit_query(mutation_create_music_album(
                 artist_name=album.name,
                 publisher=album.publisher,
                 contributor=album.contributor,
@@ -80,29 +65,17 @@ async def import_album(keys: list):
                 relation=album.relatedTo,
                 _type=None,
                 _searchScore=None,
-                additionalType=album.additionalType,
-                alternateName=album.alternateName,
-                image=album.image,
-                sameAs=album.sameAs,
-                url=album.url,
-                additionalName=album.additionalName,
-                award=album.award,
-                birthDate=album.birthDate,
-                deathDate=album.deathDate,
-                familyName=album.familyName,
-                gender=album.gender,
-                givenName=album.givenName,
-                honorificPrefix=album.honorificPrefix,
-                honorificSuffix=album.honorificSuffix,
-                jobTitle=album.jobTitle,
-                knowsLanguage=album.knowsLanguage
             ))
-            album.identifier = response["data"]["CreatePerson"]["identifier"]
+            album.identifier = response["data"]["MusicAlbum"]["identifier"]
 
         if album.identifier is None:
             print(" - failed.")
         else:
             print(" - success.")
+        '''
+
+        # Now import the audio fragments
+        import_tracks(key)
 
     print("Importing albums done.")
 
@@ -113,11 +86,10 @@ async def get_mw_album(key: str) -> CE_MusicAlbum:
     qry = f"""PREFIX schema: <http://schema.org/>
     PREFIX vocab: <https://data.muziekweb.nl/vocab/>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    select ?url ?name ?birthYear ?deathYear where {{
+    select ?url ?title ?published where {{
         BIND(<https://data.muziekweb.nl/Link/{key}> as ?url)
-        ?url vocab:beginYear ?birthYear;
-            vocab:endYear ?deathYear;
-            rdfs:label ?name.
+        ?url schema:datePublished ?published;
+        rdfs:label ?title.
     }}"""
     sparql.setQuery(qry)
 
@@ -127,7 +99,7 @@ async def get_mw_album(key: str) -> CE_MusicAlbum:
         # Now get Muziekweb data
         album = CE_MusicAlbum(
             identifier = None,
-            name = result[0]["name"]["value"],
+            name = result[0]["title"]["value"],
             url = result[0]["url"]["value"],
             contributor = GLOBAL_CONTRIBUTOR,
             creator = GLOBAL_IMPORTER_REPO,
@@ -135,8 +107,7 @@ async def get_mw_album(key: str) -> CE_MusicAlbum:
 
         album.publisher = GLOBAL_PUBLISHER
         album.description = None
-        album.birthDate = result[0]["birthYear"]["value"]
-        album.deathDate = result[0]["deathYear"]["value"]
+        album.datePublished = result[0]["published"]["value"]
 
         return album
 

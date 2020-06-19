@@ -2,9 +2,7 @@
 """
 
 from dataclasses import dataclass
-from datetime import date
-from . import CE_BaseModel
-from . import AudioObject
+from . import CE_BaseModel, AudioObject
 
 @dataclass
 class CE_AudioObject(AudioObject, CE_BaseModel):

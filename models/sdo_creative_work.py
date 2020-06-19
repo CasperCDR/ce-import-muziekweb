@@ -4,7 +4,6 @@ For reference see schema.org: https://schema.org/CreativeWork
 """
 
 from dataclasses import dataclass
-from datetime import date
 from . import Thing
 
 @dataclass

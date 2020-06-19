@@ -2,11 +2,10 @@
 """
 
 from dataclasses import dataclass
-from datetime import date
-from . import MusicAlbum
+from . import CE_BaseModel, MusicAlbum
 
 @dataclass
-class CE_MusicAlbum(MusicAlbum):
+class CE_MusicAlbum(MusicAlbum, CE_BaseModel):
     """
     Trompa MusicAlbum model
 
