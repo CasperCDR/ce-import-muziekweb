@@ -11,7 +11,6 @@ import argparse
 import asyncio
 import trompace as ce
 
-from trompace import config
 from muziekweb_api import set_api_account
 from importers import import_artist, import_album
 from dotenv import load_dotenv
@@ -67,16 +66,15 @@ if __name__ == "__main__":
 
     # NOTE: Currently requires the fix/remove-ce-host-setting-from-file branch
     # of the Trompa CE client
-    _proto, _server = trompa_ce_host.split("://")
-    ce.config.set_server(_server, (_proto == "https"))
 
 
     # Trompa Example (not working yet)
-    #config_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'import.ini')
-    #if path.exists(config_file):
-    #    ce.config.read_config(config_file)
-    #else:
-    #    ce.config.set_server('http://localhost:4000', False)
+    config_file = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'import.ini')
+    if os.path.exists(config_file):
+        ce.config.config.read_config(config_file)
+    else:
+        _proto, _server = trompa_ce_host.split("://")
+        ce.config.config.set_server(_server, (_proto == "https"))
 
 
     # Set the Muziekweb API account
