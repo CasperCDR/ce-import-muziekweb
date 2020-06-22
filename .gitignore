@@ -10,3 +10,5 @@ _testdata
 *.egg
 *.egg-info/
 *.eggs/
+
+import.ini
